@@ -42,7 +42,7 @@ async function getUserData(userName) {
 }
 
 // Main function with password verification
-async function main() {
+async function login() {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
@@ -50,7 +50,7 @@ async function main() {
 
   rl.question('Enter student name: ', async (userName) => {
     console.log(`\nSearching for: ${userName}...`);
-    
+    let username = document.getElementById("username").value;
     const userData = await getUserData(userName);
     
     if (!userData) {
@@ -58,8 +58,9 @@ async function main() {
       rl.close();
       return;
     }
-    
+    let password = document.getElementById("username").value;
     rl.question('Enter password: ', async (password) => {
+
       if (password === userData.password) {
         console.log(`\n===== Results for ${userName} =====`);
         console.log(`Autism: ${userData.autism}`);
@@ -75,7 +76,7 @@ async function main() {
   });
 }
 
-main();
+
 
 
 // ===== Alternative: Get multiple checkbox columns =====
