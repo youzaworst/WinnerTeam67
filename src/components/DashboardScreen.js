@@ -15,7 +15,7 @@ function DashboardScreen({
   const streak = 0; // TODO: Add streak tracking to Airtable
   const totalXP = user?.amount_of_xp || 0;
   const [tasks, setTasks] = useState([
-    { id: 1, title: 'Review Chapter 3: Quadratic Equations', tag: 'Math', duration: '25 min', completed: true },
+    { id: 1, title: 'Review Chapter 3: Quadratic Equations', tag: 'Math', duration: '25 min', completed: false },
     { id: 2, title: 'Practice problems: Photosynthesis', tag: 'Science', duration: '20 min', completed: false },
     { id: 3, title: 'Read Essay: The Indian Constitution', tag: 'Social', duration: '30 min', completed: false },
     { id: 4, title: 'Grammar exercises: Tenses', tag: 'English', duration: '15 min', completed: false }
