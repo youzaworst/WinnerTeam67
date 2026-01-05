@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 
-function StrugglesScreen({ active, onNavigate }) {
+function StrugglesScreen({ active, onNavigate, currentUserId, onUpdateUser }) {
   const [selectedStruggles, setSelectedStruggles] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const struggles = [
     { id: 'adhd', title: 'Focus & Attention (ADHD)', desc: 'Difficulty concentrating, easily distracted', icon: '🧠' },
@@ -17,6 +18,25 @@ function StrugglesScreen({ active, onNavigate }) {
         ? prev.filter(s => s !== id)
         : [...prev, id]
     );
+  };
+
+  const handleContinue = async () => {
+    if (currentUserId && onUpdateUser) {
+      setLoading(true);
+      try {
+        await onUpdateUser({
+          has_adhd: selectedStruggles.includes('adhd'),
+          has_dyslexia: selectedStruggles.includes('dyslexia'),
+          has_autism: selectedStruggles.includes('autism'),
+          has_epilepsy: selectedStruggles.includes('epilepsy')
+        });
+      } catch (err) {
+        console.error('Error updating user struggles:', err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    onNavigate('screen-board');
   };
 
   return (
@@ -53,14 +73,16 @@ function StrugglesScreen({ active, onNavigate }) {
             ))}
           </div>
           
-          <button className="btn btn-primary" onClick={() => onNavigate('screen-board')}>
-            Continue
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
+          <button className="btn btn-primary" onClick={handleContinue} disabled={loading}>
+            {loading ? 'Saving...' : 'Continue'}
+            {!loading && (
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            )}
           </button>
           
-          <button className="btn btn-ghost" onClick={() => onNavigate('screen-board')}>
+          <button className="btn btn-ghost" onClick={() => onNavigate('screen-board')} disabled={loading}>
             Skip for now
           </button>
         </div>

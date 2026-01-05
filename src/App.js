@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './index.css';
+import { useAuth } from './hooks/useUser';
 import WelcomeScreen from './components/WelcomeScreen';
 import SignUpScreen from './components/SignUpScreen';
 import LoginScreen from './components/LoginScreen';
@@ -12,14 +13,14 @@ import RewardScreen from './components/RewardScreen';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState('screen-welcome');
-  const [userName, setUserName] = useState('Alex');
-  const [streak, setStreak] = useState(7);
-  const [totalXP, setTotalXP] = useState(1250);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [dyslexiaMode, setDyslexiaMode] = useState(false);
   const [visualScheduleMode, setVisualScheduleMode] = useState(false);
   const [readAloudMode, setReadAloudMode] = useState(false);
   const [showReward, setShowReward] = useState(false);
   const [startBreakTimer, setStartBreakTimer] = useState(false);
+  
+  const { user, login, updateXP, updateUser } = useAuth();
 
   useEffect(() => {
     if (dyslexiaMode) {
@@ -29,8 +30,36 @@ function App() {
     }
   }, [dyslexiaMode]);
 
+  useEffect(() => {
+    // Sync dyslexia mode with user preferences
+    if (user && user.has_dyslexia !== undefined) {
+      setDyslexiaMode(user.has_dyslexia);
+    }
+  }, [user]);
+
   const showScreen = (screenId) => {
     setCurrentScreen(screenId);
+  };
+
+  const handleUserCreated = (createdUser) => {
+    setCurrentUserId(createdUser.id);
+  };
+
+  const handleLoginSuccess = (userData) => {
+    setCurrentUserId(userData.id);
+  };
+
+  const handleCompleteSession = async () => {
+    if (user) {
+      const newXP = (user.amount_of_xp || 0) + 50;
+      const newLevel = Math.floor(newXP / 100) + 1; // Simple level calculation
+      try {
+        await updateXP(newXP, newLevel);
+      } catch (err) {
+        console.error('Error updating XP:', err);
+      }
+    }
+    setShowReward(true);
   };
 
   return (
@@ -45,31 +74,33 @@ function App() {
       <SignUpScreen 
         active={currentScreen === 'screen-signup'} 
         onNavigate={showScreen}
-        onSetUserName={setUserName}
+        onSetUserName={(name) => {}}
+        onUserCreated={handleUserCreated}
       />
       
       <LoginScreen 
         active={currentScreen === 'screen-login'} 
-        onNavigate={showScreen} 
+        onNavigate={showScreen}
+        onLoginSuccess={handleLoginSuccess}
       />
       
       <StrugglesScreen 
         active={currentScreen === 'screen-struggles'} 
-        onNavigate={showScreen} 
+        onNavigate={showScreen}
+        currentUserId={currentUserId}
+        onUpdateUser={updateUser}
       />
       
       <BoardScreen 
         active={currentScreen === 'screen-board'} 
         onNavigate={showScreen}
-        onSetUserName={setUserName}
+        onSetUserName={(name) => {}}
       />
       
       <DashboardScreen 
         active={currentScreen === 'screen-dashboard'} 
         onNavigate={showScreen}
-        userName={userName}
-        streak={streak}
-        totalXP={totalXP}
+        user={user}
         dyslexiaMode={dyslexiaMode}
         visualScheduleMode={visualScheduleMode}
         readAloudMode={readAloudMode}
@@ -81,17 +112,13 @@ function App() {
       <LibraryScreen 
         active={currentScreen === 'screen-library'} 
         onNavigate={showScreen}
-        streak={streak}
-        totalXP={totalXP}
+        user={user}
       />
       
       <FocusScreen 
         active={currentScreen === 'screen-focus'} 
         onNavigate={showScreen}
-        onCompleteSession={() => {
-          setTotalXP(prev => prev + 50);
-          setShowReward(true);
-        }}
+        onCompleteSession={handleCompleteSession}
         startBreakTimer={startBreakTimer}
         onBreakTimerStarted={() => setStartBreakTimer(false)}
       />

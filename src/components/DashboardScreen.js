@@ -3,9 +3,7 @@ import React, { useState } from 'react';
 function DashboardScreen({ 
   active, 
   onNavigate, 
-  userName, 
-  streak, 
-  totalXP,
+  user,
   dyslexiaMode,
   visualScheduleMode,
   readAloudMode,
@@ -13,6 +11,9 @@ function DashboardScreen({
   onToggleVisualSchedule,
   onToggleReadAloud
 }) {
+  const userName = user?.username || 'User';
+  const streak = 7; // TODO: Add streak tracking to Airtable
+  const totalXP = user?.amount_of_xp || 0;
   const [tasks, setTasks] = useState([
     { id: 1, title: 'Review Chapter 3: Quadratic Equations', tag: 'Math', duration: '25 min', completed: true },
     { id: 2, title: 'Practice problems: Photosynthesis', tag: 'Science', duration: '20 min', completed: false },
