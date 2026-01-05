@@ -1,18 +1,48 @@
 import React, { useState } from 'react';
+import { createUser } from '../services/userService';
 
-function SignUpScreen({ active, onNavigate, onSetUserName }) {
+function SignUpScreen({ active, onNavigate, onSetUserName, onUserCreated }) {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: ''
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (formData.name) {
-      onSetUserName(formData.name.split(' ')[0]);
+    setLoading(true);
+    setError(null);
+
+    try {
+      const userData = {
+        username: formData.username,
+        password: formData.password,
+        gmail_login: formData.email,
+        current_xp_level: 1,
+        amount_of_xp: 0,
+        has_autism: false,
+        has_adhd: false,
+        has_dyslexia: false,
+        has_epilepsy: false
+      };
+
+      const createdUser = await createUser(userData);
+      
+      if (onSetUserName) {
+        onSetUserName(createdUser.username);
+      }
+      if (onUserCreated) {
+        onUserCreated(createdUser);
+      }
+      
+      onNavigate('screen-struggles');
+    } catch (err) {
+      setError(err.message || 'Failed to create account');
+    } finally {
+      setLoading(false);
     }
-    onNavigate('screen-struggles');
   };
 
   return (
@@ -28,15 +58,28 @@ function SignUpScreen({ active, onNavigate, onSetUserName }) {
           <h1>Create Account</h1>
           <p>Let's get you set up in just a few steps.</p>
           
+          {error && (
+            <div style={{ 
+              padding: '12px', 
+              background: 'rgba(248, 113, 113, 0.15)', 
+              border: '1px solid rgba(248, 113, 113, 0.3)',
+              borderRadius: '8px',
+              marginBottom: '20px',
+              color: '#f87171'
+            }}>
+              {error}
+            </div>
+          )}
+          
           <form onSubmit={handleSubmit}>
             <div className="form-group">
-              <label>Full Name</label>
+              <label>Username</label>
               <input 
                 type="text" 
                 className="form-input" 
-                placeholder="Enter your name" 
-                value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                placeholder="Choose a username" 
+                value={formData.username}
+                onChange={(e) => setFormData({...formData, username: e.target.value})}
                 required
               />
             </div>
@@ -63,11 +106,13 @@ function SignUpScreen({ active, onNavigate, onSetUserName }) {
               />
             </div>
             
-            <button type="submit" className="btn btn-primary">
-              Continue
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
+            <button type="submit" className="btn btn-primary" disabled={loading}>
+              {loading ? 'Creating Account...' : 'Continue'}
+              {!loading && (
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              )}
             </button>
           </form>
           

@@ -1,6 +1,8 @@
 import React from 'react';
 
-function LibraryScreen({ active, onNavigate, streak, totalXP }) {
+function LibraryScreen({ active, onNavigate, user }) {
+  const streak = 7; // TODO: Add streak tracking to Airtable
+  const totalXP = user?.amount_of_xp || 0;
   const subjects = [
     { id: 'math', name: 'Mathematics', icon: '📐', chapters: 15, completed: 7, progress: 45 },
     { id: 'science', name: 'Science', icon: '🔬', chapters: 14, completed: 8, progress: 60 },
