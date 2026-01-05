@@ -12,7 +12,7 @@ function DashboardScreen({
   onToggleReadAloud
 }) {
   const userName = user?.username || 'User';
-  const streak = 7; // TODO: Add streak tracking to Airtable
+  const streak = 0; // TODO: Add streak tracking to Airtable
   const totalXP = user?.amount_of_xp || 0;
   const [tasks, setTasks] = useState([
     { id: 1, title: 'Review Chapter 3: Quadratic Equations', tag: 'Math', duration: '25 min', completed: true },
