@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(cors());
 
 const base = new Airtable({
-  apiKey: 'PASTE_YOUR_AIRTABLE_API_KEY_HERE'
+  apiKey: 'patPDpj73yldjmH4h.3306fd69f1d60f5bb0a509ea5831932469f8862d3f2b41fd94879806dbe299c2'
 }).base('app7NxnIqWJMvX63L');
 
 const TABLE = 'tblvfB4S5vxFVyGAV';
