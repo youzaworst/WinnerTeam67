@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { createUser } from '../services/userService';
 
 function SignUpScreen({ active, onNavigate, onSetUserName, onUserCreated }) {
   const [formData, setFormData] = useState({
@@ -9,6 +8,23 @@ function SignUpScreen({ active, onNavigate, onSetUserName, onUserCreated }) {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // ✅ IDENTICAL CODE (moved here, unchanged except no export)
+  async function createUser(userData) {
+    const response = await fetch('http://localhost:3001/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Signup failed');
+    }
+
+    return data;
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
